@@ -7,7 +7,7 @@
     "node":"24.x"
   },
   "scripts": {
-   "build": "npm install --prefix backend && cd admin && npm install && npm run build",
+   "build": "cd backend && npm install && cd ../admin && npm ci && npm run build",
     "start": "npm run start --prefix backend"
   },
   "repository": {
