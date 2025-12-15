@@ -1,5 +1,8 @@
 {
-  "buildCommand": "cd admin && npm ci && npm run build",
+  "buildCommand": "cd admin && rm -rf node_modules && npm ci && npm run build",
   "outputDirectory": "admin/dist",
-  "installCommand": "cd backend && npm install"
+  "installCommand": "cd backend && npm install",
+  "github": {
+    "silent": true
+  }
 }
