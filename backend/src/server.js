@@ -1,32 +1,25 @@
 import express from 'express';
-import path from 'path';
+// remove path import if not used elsewhere
 import { ENV } from './config/env.js';
 
-const __dirname = path.resolve();
 const app = express();
 
-// 1. API Routes (Always work)
 app.get("/api/health", (req, res) => {
   res.send("OK the server is working now!!!");
 });
 
-// 2. Production Setup (Behavior differs by environment)
-if (ENV.NODE_ENV === 'production') {
-  // CRITICAL: We only attempt to serve static files if we are NOT on Vercel
-  // (Vercel handles this via vercel.json, so this code block is skipped or ignored safely)
-  
-  // Note: We use '*' instead of '{*any}' to prevent crashing
-  // But on Vercel, the vercel.json routes will catch this before it hits the server
-}
+// --- REMOVE THE STATIC SERVING LOGIC HERE ---
+// Do not use express.static or path.join to serve the frontend.
+// Vercel's Edge Network handles this via vercel.json.
 
-// 3. Start Server
-// Only listen to the port if we are running locally. 
-// Vercel manages the port automatically for exported apps.
-if (ENV.NODE_ENV !== 'production') {
-  app.listen(ENV.PORT, () => {
-    console.log(`Server is running on port ${ENV.PORT}`);
+// Only listen to the port if we are NOT in production (running locally)
+// Vercel requires you to export the app, it handles the listening automatically.
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = ENV.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running locally on port ${PORT}`);
   });
 }
 
-// 4. Export for Vercel
+// REQUIRED: Export the app for Vercel to load it as a Serverless Function
 export default app;
