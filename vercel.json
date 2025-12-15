@@ -1,4 +1,4 @@
 {
-  "buildCommand": "npm install --prefix backend && npm install --prefix admin && npm run build --prefix admin",
+  "buildCommand": "cd backend && npm install && cd ../admin && npm ci && npm run build",
   "outputDirectory": "admin/dist"
 }
