@@ -10,7 +10,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "buildCommand": "npm run build" 
+        "buildCommand": "npm run build"
       }
     }
   ],
@@ -20,7 +20,8 @@
       "dest": "backend/server.js"
     },
     {
-      "handle": "filesystem"
+      "src": "/(.*\\.(css|js|png|jpg|json|svg|ico))$",
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
