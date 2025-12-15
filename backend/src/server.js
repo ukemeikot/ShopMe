@@ -22,3 +22,14 @@ if(ENV.NODE_ENV === 'production'){
 app.listen(ENV.PORT, () => {
   console.log('Server is running on port 3000');
 });
+
+
+// Only listen to the port if we are NOT in production (running locally)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(ENV.PORT, () => {
+    console.log(`Server is running on port ${ENV.PORT}`);
+  });
+}
+
+// REQUIRED: Export the app for Vercel to load it as a Serverless Function
+export default app;
