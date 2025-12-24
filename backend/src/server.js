@@ -1,8 +1,10 @@
 import express from 'express';
-import path from 'path';
+import path, { format } from 'path';
 import { ENV } from './config/env.js';
 import { connectDatabase } from './config/database.js';
-import { clerkMiddleware } from '@clerk/express'
+import { clerkMiddleware } from '@clerk/express';
+import { inngest, functions } from './config/inngest.js';
+import { serve } from "inngest/express";
 
 const app = express();
 const __dirname = path.resolve();
@@ -14,6 +16,12 @@ const __dirname = path.resolve();
 connectDatabase();
 
 app.use(clerkMiddleware()) //adds authentication object under the req=> req.auth
+app.use(express.json());
+
+// =================================================================
+// 2. INNGEST WEBHOOK ENDPOINT
+// =================================================================
+app.post('/api/inngest', serve({client:inngest, functions}));
 
 app.get("/api/health", (req, res) => {
   res.send("OK the server is working now!!!");
