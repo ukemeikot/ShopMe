@@ -6,7 +6,7 @@ export const inngest = new Inngest({id:"shopMe"});
 
 const syncUser = inngest.createFunction(
     {id:"sync-user"},
-    {event:"clerk/user.created"},
+    {event:"user.created"},
     async ({event}) => {
         await connectDatabase();
         const {id:email_addresses, first_name, last_name, imageUrl} = event.data;
@@ -26,7 +26,7 @@ const syncUser = inngest.createFunction(
 
 const deleteUser = inngest.createFunction(
     {id:"delete-user-from-db"},
-    {event:"clerk/user.deleted"},
+    {event:"user.deleted"},
     async ({event}) => {
         await connectDatabase();
         const {id} = event.data;
