@@ -34,13 +34,13 @@ app.get("/api/health", (req, res) => {
 });
 
 // =================================================================
-// 3. SERVE FRONTEND (if built)
+// 3. SERVE FRONTEND (Static files first)
 // =================================================================
 const frontendPath = path.join(__dirname, '../admin/dist');
 app.use(express.static(frontendPath));
 
-app.get('*', (req, res) => {
-  // Check if the file exists before serving index.html
+// Catch-all route for SPA - MUST be last
+app.get('/*', (req, res) => {  // ✅ Changed from '*' to '/*'
   const indexPath = path.join(frontendPath, 'index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
@@ -50,7 +50,7 @@ app.get('*', (req, res) => {
 });
 
 // =================================================================
-// 4. START SERVER (Always, not just in development)
+// 4. START SERVER
 // =================================================================
 const PORT = ENV.PORT || 3000;
 app.listen(PORT, () => {
