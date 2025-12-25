@@ -1,6 +1,6 @@
 import { Inngest } from "inngest";
 import { connectDatabase } from "./database.js";
-import User from "../models/user.model.js"; // Adjust path if needed
+import { User } from "../models/user.model.js"; // ✅ Correct - named import // Adjust path if needed
 
 export const inngest = new Inngest({ id: "shopMe" });
 
