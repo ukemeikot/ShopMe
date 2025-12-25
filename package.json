@@ -7,13 +7,8 @@
     "node": "24.x"
   },
   "scripts": {
-    "install:backend": "cd backend && npm install",
-    "install:admin": "cd admin && npm install",
-    "build:admin": "cd admin && npm run build",
-    "build": "npm run install:backend && npm run install:admin && npm run build:admin",
-    "start": "cd backend && node src/server.js",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:admin": "cd admin && npm run dev"
+    "build": "cd backend && npm install && cd ../admin && npm install && npm run build",
+    "start": "cd backend && node src/server.js"
   },
   "repository": {
     "type": "git",
