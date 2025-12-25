@@ -10,7 +10,7 @@ export const inngest = new Inngest({
 
 const syncUser = inngest.createFunction(
     { id: "sync-user" },
-    { event: "user.created" },
+    { event: "clerk/user.created" },
     async ({ event, step }) => {
         return await step.run('sync-user-to-db', async () => {
             try {
@@ -45,7 +45,7 @@ const syncUser = inngest.createFunction(
 
 const deleteUser = inngest.createFunction(
     { id: "delete-user-from-db" },
-    { event: "user.deleted" },
+    { event: "clerk/user.deleted" },
     async ({ event, step }) => {
         return await step.run('delete-user-from-db', async () => {
             try {
