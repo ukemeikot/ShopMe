@@ -7,24 +7,22 @@ import { clerkMiddleware } from "@clerk/express";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./config/inngest.js";
 
-// ----------------------------------------------------------------
-// Setup __dirname (ESM-safe)
-// ----------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
 // =================================================================
-// 1. CONNECT TO DATABASE
+// 1. CONNECT DATABASE
 // =================================================================
 connectDatabase();
 
 // =================================================================
-// 2. INNGEST ENDPOINT (MUST BE FIRST)
+// 2. INNGEST — RAW BODY (MUST BE FIRST)
 // =================================================================
 app.use(
   "/api/inngest",
+  express.raw({ type: "*/*" }),
   serve({
     client: inngest,
     functions,
@@ -32,7 +30,7 @@ app.use(
 );
 
 // =================================================================
-// 3. AUTH MIDDLEWARE (EXCLUDE INNGEST)
+// 3. AUTH (EXCLUDE INNGEST)
 // =================================================================
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/inngest")) return next();
@@ -40,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 // =================================================================
-// 4. JSON BODY PARSER (AFTER INNGEST)
+// 4. JSON BODY PARSER (NORMAL APIs)
 // =================================================================
 app.use(express.json());
 
@@ -52,7 +50,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 // =================================================================
-// 6. SERVE FRONTEND STATIC FILES
+// 6. FRONTEND STATIC FILES
 // =================================================================
 const frontendPath = path.join(__dirname, "../admin/dist");
 app.use(express.static(frontendPath));
@@ -62,10 +60,7 @@ app.use(express.static(frontendPath));
 // =================================================================
 app.use((req, res, next) => {
   if (!req.path.startsWith("/api")) {
-    const indexPath = path.join(frontendPath, "index.html");
-    res.sendFile(indexPath, (err) => {
-      if (err) res.status(404).send("Frontend not built");
-    });
+    res.sendFile(path.join(frontendPath, "index.html"));
   } else {
     next();
   }
@@ -79,7 +74,6 @@ const PORT = ENV.PORT || 3000;
 app.listen(PORT, () => {
   console.log("🚀 Server running");
   console.log(`📍 Port: ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`❤️  Health: http://localhost:${PORT}/api/health`);
-  console.log(`⚡ Inngest: http://localhost:${PORT}/api/inngest`);
+  console.log(`❤️  Health: /api/health`);
+  console.log(`⚡ Inngest: /api/inngest`);
 });
