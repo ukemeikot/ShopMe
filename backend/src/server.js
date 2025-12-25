@@ -1,5 +1,5 @@
 import express from 'express';
-import path, { format } from 'path';
+import path from 'path';
 import { ENV } from './config/env.js';
 import { connectDatabase } from './config/database.js';
 import { clerkMiddleware } from '@clerk/express';
@@ -10,31 +10,37 @@ const app = express();
 const __dirname = path.resolve();
 
 // =================================================================
-// 1. CONNECT TO DATABASE (GLOBAL SCOPE)
-// This runs in both Production (Vercel) and Local Development.
+// 1. CONNECT TO DATABASE
 // =================================================================
 connectDatabase();
 
-app.use(clerkMiddleware()) //adds authentication object under the req=> req.auth
+app.use(clerkMiddleware());
 app.use(express.json());
 
 // =================================================================
-// 2. INNGEST WEBHOOK ENDPOINT
+// 2. INNGEST WEBHOOK ENDPOINT - ALL METHODS
 // =================================================================
-app.post('/api/inngest', serve({client:inngest, functions}));
+const inngestHandler = serve({
+  client: inngest,
+  functions: functions,
+});
+
+app.get('/api/inngest', inngestHandler);
+app.post('/api/inngest', inngestHandler);
+app.put('/api/inngest', inngestHandler);
 
 app.get("/api/health", (req, res) => {
   res.send("OK the server is working now!!!");
 });
 
 // =================================================================
-// 2. LOCAL DEVELOPMENT ONLY CONFIGURATION
+// 3. LOCAL DEVELOPMENT ONLY
 // =================================================================
 if (process.env.NODE_ENV !== 'production') {
   const frontendPath = path.join(__dirname, '../admin/dist');
   app.use(express.static(frontendPath));
 
-  app.get('/{*any}', (req, res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 
@@ -42,7 +48,6 @@ if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`Server is running locally on port ${PORT}`);
     console.log(`Serving frontend from: ${frontendPath}`);
-    // Note: connectDatabase() is already called at the top, so we don't need it here.
   });
 }
 
