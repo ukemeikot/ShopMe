@@ -34,21 +34,28 @@ app.get("/api/health", (req, res) => {
 });
 
 // =================================================================
-// 3. LOCAL DEVELOPMENT ONLY
+// 3. SERVE FRONTEND (if built)
 // =================================================================
-if (process.env.NODE_ENV !== 'production') {
-  const frontendPath = path.join(__dirname, '../admin/dist');
-  app.use(express.static(frontendPath));
+const frontendPath = path.join(__dirname, '../admin/dist');
+app.use(express.static(frontendPath));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
+app.get('*', (req, res) => {
+  // Check if the file exists before serving index.html
+  const indexPath = path.join(frontendPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(404).send('Frontend not built');
+    }
   });
+});
 
-  const PORT = ENV.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is running locally on port ${PORT}`);
-    console.log(`Serving frontend from: ${frontendPath}`);
-  });
-}
-
-export default app;
+// =================================================================
+// 4. START SERVER (Always, not just in development)
+// =================================================================
+const PORT = ENV.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🔗 Inngest endpoint: http://localhost:${PORT}/api/inngest`);
+});
