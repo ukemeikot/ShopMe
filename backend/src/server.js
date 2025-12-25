@@ -23,6 +23,7 @@ app.use(express.json());
 const inngestHandler = serve({
   client: inngest,
   functions: functions,
+  signingKey: ENV.INGEST_SIGNING_KEY,
 });
 
 app.get('/api/inngest', inngestHandler);
